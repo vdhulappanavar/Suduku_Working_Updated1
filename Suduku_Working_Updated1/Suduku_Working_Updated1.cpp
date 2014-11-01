@@ -53,6 +53,8 @@ void moveNext(int *xpos , int  *ypos);
 int CheckIfInvalid();
 void print2ndPage();
 void printMenu();
+void read_no();
+void printLastPage();
 //**************USER DEFINED FUNCTIONS**************************************************************************
 //***************************************************************************************************************
 
@@ -98,11 +100,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	system("cls");
 	printMenu();
     fflush(stdin);
-	system("cls");
-	/*printGrid();
-	GotoXY(xrefinitial,yrefinitial);
-	ReadAtXY();*/
-	getch();
 	return 0;
 }
 
@@ -178,26 +175,61 @@ void printMenu()
 		printf("*");
 	}
 	GotoXY(110, 29);
-	scanf("%d",&ch);
+	ch=getch();
+	if(ch==49)
+		printf("1");
+	if(ch==50)
+		printf("2");
+	if(ch==51)
+		printf("3");
+	if(ch==113)
+		printf("%c",ch);
+	if(ch==27)
+		printf("esc",ch);
+	for(i=0;i<=10;i++)
+		Delay();
 	switch(ch)
 	{
-		case 1:
+		case 49:
+			system("cls");
 			printGrid();
 			GotoXY(xrefinitial,yrefinitial);
 			ReadAtXY();	
 			break;
-		case 2:
+		case 50:
+			system("cls");
 			read_no();
+			InitilizeOutputMatrix();
 			Intilize1stValue();
 			FindSolution();
-			GotoXY(3, 77);
 			printOutputMatrix();
 			getch();				
 			break;
-		case 3:
-		case 113:
-		case 27:
+		case 51: printLastPage() ;
+			break;
+		case 113: printLastPage() ;
+			break;
+		case 27: printLastPage() ; 
+			break;
 	}
+}
+
+void printLastPage()
+{
+	system("cls");
+	GotoXY(60,20);
+	printf("*************************************\n");
+	GotoXY(60,21);
+	printf("*************************************\n");
+	GotoXY(72,22);
+	printf("THANK YOU");
+	GotoXY(72,23);
+	printf("*************************************\n");
+	GotoXY(72,24);
+	printf("*************************************\n");
+	getch();
+	Delay();
+	exit(0);
 }
 
 void BacktrackFor1stGird()
@@ -394,7 +426,7 @@ void printInputMatrix()
 }
 void printOutputMatrix()
 {
-	int i,j;
+	/*int i,j;
 	printf("Output Matrix \n");
 	for(i=0;i<9;i++)
 	{
@@ -403,6 +435,17 @@ void printOutputMatrix()
 			printf("%3d", OutputMatrix[i][j]);
 		}
 		printf("\n");
+	}*/
+    int x=xrefinitial , y=yrefinitial;
+	printGrid();
+	for(i=0;i<9;i++)
+	{
+		for(j=0;j<9;j++)
+		{
+			y=y+GRID_CELL_SIZE_Y;
+			GotoXY(x,y);
+		}
+		x=x+GRID_CELL_SIZE_X;
 	}
 }
 
@@ -451,11 +494,8 @@ void print1stPage()
 	printf("*************************************\n");
 	GotoXY(72,24);
 	printf("*************************************\n");
-	int ch = getch();
-	if (ch == 127)
-		printf("Backspace");
-	//fflush(stdout);
-
+	getch();
+	fflush(stdout);
 }
 
 void printSingleGrid(int x, int y)
@@ -472,7 +512,7 @@ void printSingleGrid(int x, int y)
 
 void printGrid()
 {
-	int i,j,x=70 , y=19;
+	int i,j,x=xrefinitial-2 , y=yrefinitial-2;
 	char ch;
 	for(i=0;i<9;i=i++)
 	{
@@ -531,9 +571,11 @@ void ReadAtXY()
 		}
 		if (key == 's') //Submit to solve
 		{
+			GotoXY((xreffinal-xrefinitial/2),yrefinitial-2);
+			printf("SUBMIT");
+			for(i=0;i<20;i++)
+				Delay();
 			InitilizeOutputMatrix();
-			GotoXY(3, 40);
-			printInputMatrix();
 			if(CheckIfInvalid())
 			{
 				Intilize1stValue();
@@ -545,17 +587,18 @@ void ReadAtXY()
 			}
 			else
 			{
+				HANDLE hConsole;
+				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);     
 				GotoXY(xrefinitial, yreffinal+5);
-				printf("INVALID SUDOKO");
+				SetConsoleTextAttribute(hConsole, 4);
+				printf ("INVALID SUDOKU\n");
+				getch();
+			    SetConsoleTextAttribute(hConsole, 7);
 				system("cls");
 				printMenu();
 			}
 		}
-		/*if (key == 27) //ESC
-		{
-			break;
-		}*/
-				
+						
 		if(key>'0' && key<='9')
 		{
 			val = key - 48;
