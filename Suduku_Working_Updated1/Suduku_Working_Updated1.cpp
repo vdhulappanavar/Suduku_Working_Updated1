@@ -55,6 +55,7 @@ void print2ndPage();
 void printMenu();
 void read_no();
 void printLastPage();
+void printOptions(int o);
 //**************USER DEFINED FUNCTIONS**************************************************************************
 //***************************************************************************************************************
 
@@ -139,15 +140,61 @@ void Intilize1stValue()
 
 void print2ndPage()
 {
-   printf("SUDOKU:\n\t Sudoku is a number puzzle in which The objective is to fill a 9×9 grid with digits so that each column, each row, and each of the nine 3×3 sub-grids that compose the grid");
-   printf("\nThe puzzle was popularized in 1986 by the Japanese puzzle company Nikoli, under the name Sudoku");
-   printf("\nPress Enter to go to the next page");
+	int i;
+   GotoXY(30, 14);
+   for(i=0;i<120;i++)
+	   printf("*");
+
+   GotoXY(30,15);
+   printf("*");
+   GotoXY(150 , 15);
+   printf("*");
+
+   GotoXY(80, 15);
+   printf("SUDOKU");
+
+   GotoXY(30,17);
+   printf("*");
+   GotoXY(150 , 17);
+   printf("*");
+
+   GotoXY(37, 17);
+   printf("    Sudoku is a number puzzle in which The objective is to fill a 9×9 grid with digits so      \n");
+
+   GotoXY(30,19);
+   printf("*");
+   GotoXY(150 , 19);
+   printf("*");
+
+   GotoXY(37, 19);
+   printf( "    that each column, each row, and each of the nine 3×3 sub-grids that compose the grid      \n");
+
+   GotoXY(30,21);
+   printf("*");
+   GotoXY(150 , 21);
+   printf("*");
+
+   GotoXY(37, 21);
+   printf("The puzzle was popularized in 1986 by the Japanese puzzle company Nikoli, under the name Sudoku\n");
+
+   GotoXY(30,24);
+   printf("*");
+   GotoXY(150 , 24);
+   printf("*");
+
+   GotoXY(67, 24);
+   printf("PRESS ENTER TO GO TO THE NEXT PAGE");
+
+   GotoXY(30, 25);
+   for(i=0;i<120;i++)
+	   printf("*");
    getch();
 }
 
 void printMenu()
 {
 	int ch,i;
+	char c;
 	printf("\n\n\n\n\n\n\n\n\n\n");
 	printf("\t\t\t");
 	for(i=0;i<130;i++)
@@ -186,12 +233,12 @@ void printMenu()
 		printf("%c",ch);
 	if(ch==27)
 		printf("esc",ch);
-	for(i=0;i<=10;i++)
-		Delay();
+	getch();
 	switch(ch)
 	{
 		case 49:
 			system("cls");
+			printOptions(1);
 			printGrid();
 			GotoXY(xrefinitial,yrefinitial);
 			ReadAtXY();	
@@ -200,10 +247,29 @@ void printMenu()
 			system("cls");
 			read_no();
 			InitilizeOutputMatrix();
-			Intilize1stValue();
-			FindSolution();
-			printOutputMatrix();
-			getch();				
+			printOptions(2);
+			printInputMatrix();
+			c=getch();
+			if(c!=27 && c!='q' && c!='e')
+			{
+				Intilize1stValue();
+				FindSolution();
+				printOutputMatrix();
+				getch();				
+			}
+			else
+			{
+					if(c==27 || c==113)
+					{
+						system("cls");
+						printMenu();
+					}
+
+					if(c=='e')
+					{
+						printLastPage();
+					}
+			}
 			break;
 		case 51: printLastPage() ;
 			break;
@@ -227,6 +293,8 @@ void printLastPage()
 	printf("*************************************\n");
 	GotoXY(72,24);
 	printf("*************************************\n");
+	GotoXY(72,50);
+	printf("PROJECT DONE BY VIDYA ANIL D");
 	getch();
 	Delay();
 	exit(0);
@@ -413,40 +481,50 @@ int backtrack(int oldrow , int oldcol, int *newrow , int *newcol)
 
 void printInputMatrix()
 {
+	int x=xrefinitial , y=yrefinitial;
 	int i,j;
-	printf("Input Matrix \n");
-	for(i=0;i<9;i++)
-	{
-		for(j=0;j<9;j++)
-		{
-			printf("%3d", InputMatrix[i][j]);
-		}
-		printf("\n");
-	}
-}
-void printOutputMatrix()
-{
-	/*int i,j;
-	printf("Output Matrix \n");
-	for(i=0;i<9;i++)
-	{
-		for(j=0;j<9;j++)
-		{
-			printf("%3d", OutputMatrix[i][j]);
-		}
-		printf("\n");
-	}*/
-    int x=xrefinitial , y=yrefinitial;
 	printGrid();
 	for(i=0;i<9;i++)
 	{
 		for(j=0;j<9;j++)
 		{
-			y=y+GRID_CELL_SIZE_Y;
-			GotoXY(x,y);
+			if(checkOriginal(i,j))
+			{
+				GotoXY(((j*GRID_CELL_SIZE_X)+xrefinitial),((i*GRID_CELL_SIZE_Y)+yrefinitial));
+				printf("%d", OutputMatrix[i][j]);
+			}
 		}
-		x=x+GRID_CELL_SIZE_X;
 	}
+}
+void printOutputMatrix()
+{
+	int x=xrefinitial , y=yrefinitial;
+	int i,j;
+	HANDLE hConsole;
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	printGrid();
+	for(i=0;i<9;i++)
+	{
+		for(j=0;j<9;j++)
+		{
+			GotoXY(x,y);
+			if(checkOriginal(i,j))
+			{
+				SetConsoleTextAttribute(hConsole, 9);
+				printf("%d", OutputMatrix[i][j]);
+				x=x+GRID_CELL_SIZE_X;
+			}
+			else
+			{
+				SetConsoleTextAttribute(hConsole, 2);
+				printf("%d", OutputMatrix[i][j]);
+				x=x+GRID_CELL_SIZE_X;
+			}
+		}
+		y=y+GRID_CELL_SIZE_Y;
+		x=xrefinitial;
+	}
+	SetConsoleTextAttribute(hConsole, 7);
 }
 
 void printgridIndex()
@@ -526,9 +604,93 @@ void printGrid()
 	}
 }
 
+void printOptions(int o)
+{
+	int i=0;
+	for(i=0;i<=6;i++)
+		printf("\n");
+	if(o==1)
+	{
+		for(i=0;i<7;i++)
+			printf("\t");
+		for(i=0;i<60;i++)
+			printf("*");
+		printf("\n");
+		for(i=0;i<9;i++)
+			printf("\t");
+		printf("\tWELCOME!!!\n\n");
+		for(i=0;i<9;i++)
+			printf("\t");
+		printf("ENTER A SUDUKU OF YOUR CHOICE\n");
+		for(i=0;i<8;i++)
+			printf("\t");
+		printf("     press s for submit and press enter\n");
+		for(i=0;i<8;i++)
+			printf("\t");
+		printf("     press e and enter to exit\n");
+		for(i=0;i<8;i++)
+			printf("\t");
+		printf("    enter esc or q to go back to previous menu\n");
+		for(i=0;i<7;i++)
+			printf("\t");
+		for(i=0;i<60;i++)
+			printf("*");
+	}
+
+	if(o==2)
+	{
+		for(i=0;i<7;i++)
+			printf("\t");
+		for(i=0;i<60;i++)
+			printf("*");
+		printf("\n");
+		for(i=0;i<9;i++)
+			printf("\t");
+		printf("\tWELCOME!!!\n\n");
+		for(i=0;i<9;i++)
+			printf("\t");
+		printf("PRESS ENTER TO VIEW THE SOLUTION\n");
+		for(i=0;i<8;i++)
+			printf("\t");
+		printf("     press e and enter to exit\n");
+		for(i=0;i<8;i++)
+			printf("\t");
+		printf("    enter esc or q to go back to previous menu\n");
+		for(i=0;i<7;i++)
+			printf("\t");
+		for(i=0;i<60;i++)
+			printf("*");
+	}
+
+	if(o==3)
+	{
+		for(i=0;i<7;i++)
+			printf("\t");
+		for(i=0;i<60;i++)
+			printf("*");
+		printf("\n");
+		for(i=0;i<9;i++)
+			printf("\t");
+		printf("\tWELCOME!!!\n\n");
+		for(i=0;i<9;i++)
+			printf("\t");
+		printf("SOLUTION TO THE ENTERED SUDOKU\n\n");
+		for(i=0;i<8;i++)
+			printf("\t");
+		printf("     press e and enter to exit\n");
+		for(i=0;i<8;i++)
+			printf("\t");
+		printf("    enter esc or q to go back to previous menu\n");
+		for(i=0;i<7;i++)
+			printf("\t");
+		for(i=0;i<60;i++)
+			printf("*");
+	}
+}
+
 void ReadAtXY()
 {
-	char key;
+	char key,key1;
 	int ch;
 	int val,i=0;
 	int xpos=xrefinitial,ypos=yrefinitial;
@@ -541,12 +703,12 @@ void ReadAtXY()
 			GotoXY(xpos,ypos);
 			printf(" ");
 		}
-		if(key==RIGHT && xpos==xreffinal && ypos<(yreffinal) && ypos>=yrefinitial)//37)
+		if(key==RIGHT && xpos==xreffinal && ypos<(yreffinal) && ypos>=yrefinitial)
 		{
 			ypos=ypos+GRID_CELL_SIZE_Y; xpos=xrefinitial; GotoXY(xpos,ypos);
 		}
 		
-		else if(key==RIGHT && xpos<(xreffinal)/*107*/ && xpos>=xrefinitial)
+		else if(key==RIGHT && xpos<(xreffinal) && xpos>=xrefinitial)
 		{
 			xpos=xpos+GRID_CELL_SIZE_X; GotoXY(xpos,ypos);
 		}
@@ -569,36 +731,7 @@ void ReadAtXY()
 		{
 			ypos=ypos+GRID_CELL_SIZE_Y; GotoXY(xpos,ypos);
 		}
-		if (key == 's') //Submit to solve
-		{
-			GotoXY((xreffinal-xrefinitial/2),yrefinitial-2);
-			printf("SUBMIT");
-			for(i=0;i<20;i++)
-				Delay();
-			InitilizeOutputMatrix();
-			if(CheckIfInvalid())
-			{
-				Intilize1stValue();
-				FindSolution();
-				GotoXY(3, 77);
-				printOutputMatrix();
-				getch();
-				break;
-			}
-			else
-			{
-				HANDLE hConsole;
-				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);     
-				GotoXY(xrefinitial, yreffinal+5);
-				SetConsoleTextAttribute(hConsole, 4);
-				printf ("INVALID SUDOKU\n");
-				getch();
-			    SetConsoleTextAttribute(hConsole, 7);
-				system("cls");
-				printMenu();
-			}
-		}
-						
+
 		if(key>'0' && key<='9')
 		{
 			val = key - 48;
@@ -609,7 +742,62 @@ void ReadAtXY()
 			printf("%d",val);
 			moveNext(&xpos , &ypos);
 		}
+
+		if (key == 's') //Submit to solve
+		{
+			GotoXY((xrefinitial+10),yrefinitial-5);
+			printf("SUBMIT");
+			getch();
+			for(i=0;i<20;i++)
+				Delay();
+			InitilizeOutputMatrix();
+			if(CheckIfInvalid())
+			{
+				Intilize1stValue();
+				FindSolution();
+				system("cls");
+				printOptions(3);
+				printOutputMatrix();
+				key1=getch();							
+				if(key1==27 || key1==113)
+				{
+					system("cls");
+					printMenu();
+				}
+				if(key1=='e')
+				{
+					printLastPage();
+				}
+			}
+			else
+			{
+				HANDLE hConsole;
+				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);     
+				GotoXY((xrefinitial+8),yrefinitial-4);
+				SetConsoleTextAttribute(hConsole, 4);
+				printf ("INVALID SUDOKU\n");
+				GotoXY((xrefinitial),yrefinitial-3);
+				printf("PRESS ESC OR q TO GO TO MENU PAGE");
+				GotoXY(xrefinitial+8, yreffinal+5);
+				SetConsoleTextAttribute(hConsole, 4);
+				printf ("INVALID SUDOKU\n");
+				getch();
+			    SetConsoleTextAttribute(hConsole, 7);
+				system("cls");
+				printMenu();
+			}
+		}		
 		
+		if(key==27 || key==113)
+		{
+			system("cls");
+			printMenu();
+		}
+
+		if(key=='e')
+		{
+			printLastPage();
+		}
 	}
 	while(1);
 }
