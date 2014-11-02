@@ -194,7 +194,7 @@ void print2ndPage()
 void printMenu()
 {
 	int ch,i;
-	char c;
+	char c, k;
 	printf("\n\n\n\n\n\n\n\n\n\n");
 	printf("\t\t\t");
 	for(i=0;i<130;i++)
@@ -222,7 +222,12 @@ void printMenu()
 		printf("*");
 	}
 	GotoXY(110, 29);
-	ch=getch();
+	while(1)
+	{
+		ch=getch();
+		if((ch==49 || ch==50 || ch==51 || ch==113 || ch==27))
+			break;
+	}
 	if(ch==49)
 		printf("1");
 	if(ch==50)
@@ -255,21 +260,31 @@ void printMenu()
 				Intilize1stValue();
 				FindSolution();
 				printOutputMatrix();
-				getch();				
+				k=getch();				
+				if(k=='e')
+				{
+					system("cls");
+					printLastPage();
+				}
+				else
+				{
+					system("cls");
+					printMenu();
+				}
 			}
 			else
-			{
-					if(c==27 || c==113)
-					{
-						system("cls");
+			{				
+				if(c==27 || c==113)
+				{
+					system("cls");
 						printMenu();
-					}
-
-					if(c=='e')
-					{
-						printLastPage();
-					}
-			}
+				}
+				
+				if(c=='e')
+				{
+					printLastPage();
+				}
+		}
 			break;
 		case 51: printLastPage() ;
 			break;
@@ -510,13 +525,13 @@ void printOutputMatrix()
 			GotoXY(x,y);
 			if(checkOriginal(i,j))
 			{
-				SetConsoleTextAttribute(hConsole, 9);
+				SetConsoleTextAttribute(hConsole, 14);
 				printf("%d", OutputMatrix[i][j]);
 				x=x+GRID_CELL_SIZE_X;
 			}
 			else
 			{
-				SetConsoleTextAttribute(hConsole, 2);
+				SetConsoleTextAttribute(hConsole, 11);
 				printf("%d", OutputMatrix[i][j]);
 				x=x+GRID_CELL_SIZE_X;
 			}
@@ -530,11 +545,32 @@ void printOutputMatrix()
 void printgridIndex()
 {
 	int i,j;
-	printf("grid index \n");
-	for(i=0;i<IndexCount;i++)
-	{
-			printf("%3d  %3d", gridIndex[i].row , gridIndex[i].col);
+	GotoXY(xrefinitial-GRID_CELL_SIZE_X , yrefinitial-GRID_CELL_SIZE_Y);
+	for(i=0;i<9;i++)
+	{		
+		printf("%4d",i);
 	}
+
+
+	GotoXY(xrefinitial-(GRID_CELL_SIZE_X) , yrefinitial);
+	for(i=0;i<9;i++)
+	{		
+		printf("%d",i);
+		GotoXY((xrefinitial-(GRID_CELL_SIZE_X)) , (yrefinitial+((i+1)*GRID_CELL_SIZE_Y)));
+	}
+	//*********************************************************************************************
+	GotoXY(xrefinitial-GRID_CELL_SIZE_X+1 , yreffinal+2);
+	for(i=0;i<9;i++)
+	{		
+		printf("%4d",i);
+	}
+
+	/*GotoXY(xreffinal+(GRID_CELL_SIZE_X) , yreffinal);
+	for(i=0;i<9;i++)
+	{		
+		printf("%d",i);
+		GotoXY((xreffinal-(GRID_CELL_SIZE_X)) , (yrefinitial+((i+1)*GRID_CELL_SIZE_Y)));
+	}*/
 }
 
 void gotoxy(int x, int y)
@@ -562,16 +598,26 @@ void GotoXY(int x, int y)
 
 void print1stPage()
 {
+	int i;
 	GotoXY(60,20);
-	printf("*************************************\n");
+	
+	for(i=0;i<45; i++)
+		printf("*");
 	GotoXY(60,21);
-	printf("*************************************\n");
+	
+	for(i=0;i<45; i++)
+		printf("*");
 	GotoXY(72,22);
-	printf("WELCOME TO THE SUDOKU GAME");
+	printf("WELCOME TO THE SUDOKU CRACKER!!!!");
+
 	GotoXY(72,23);
-	printf("*************************************\n");
+	for(i=0;i<45; i++)
+		printf("*");
 	GotoXY(72,24);
-	printf("*************************************\n");
+
+	for(i=0;i<45; i++)
+		printf("*");
+
 	getch();
 	fflush(stdout);
 }
@@ -599,9 +645,10 @@ void printGrid()
 			printSingleGrid(x,y);
 			x=x+GRID_CELL_SIZE_X;
 		}
-		x=70;
+		x=xrefinitial-2;
 		y=y+GRID_CELL_SIZE_Y;
 	}
+	printgridIndex();
 }
 
 void printOptions(int o)
@@ -625,16 +672,19 @@ void printOptions(int o)
 		for(i=0;i<8;i++)
 			printf("\t");
 		printf("     press s for submit and press enter\n");
+		for(i=0;i<9;i++)
+			printf("\t");
+		printf("press e to exit\n");
 		for(i=0;i<8;i++)
 			printf("\t");
-		printf("     press e and enter to exit\n");
-		for(i=0;i<8;i++)
-			printf("\t");
-		printf("    enter esc or q to go back to previous menu\n");
+		printf("\tenter esc or q to go back to previous menu\n");
 		for(i=0;i<7;i++)
 			printf("\t");
 		for(i=0;i<60;i++)
 			printf("*");
+
+		GotoXY((xrefinitial+10),yrefinitial-5);
+		printf("SUBMIT");
 	}
 
 	if(o==2)
@@ -650,9 +700,9 @@ void printOptions(int o)
 		for(i=0;i<9;i++)
 			printf("\t");
 		printf("PRESS ENTER TO VIEW THE SOLUTION\n");
-		for(i=0;i<8;i++)
+		for(i=0;i<9;i++)
 			printf("\t");
-		printf("     press e and enter to exit\n");
+		printf("     press e to exit\n");
 		for(i=0;i<8;i++)
 			printf("\t");
 		printf("    enter esc or q to go back to previous menu\n");
@@ -674,10 +724,10 @@ void printOptions(int o)
 		printf("\tWELCOME!!!\n\n");
 		for(i=0;i<9;i++)
 			printf("\t");
-		printf("SOLUTION TO THE ENTERED SUDOKU\n\n");
-		for(i=0;i<8;i++)
+		printf("YOUR SUDOKU UNCRACKED!!!!\n\n");
+		for(i=0;i<9;i++)
 			printf("\t");
-		printf("     press e and enter to exit\n");
+		printf("     press e to exit\n");
 		for(i=0;i<8;i++)
 			printf("\t");
 		printf("    enter esc or q to go back to previous menu\n");
@@ -745,8 +795,7 @@ void ReadAtXY()
 
 		if (key == 's') //Submit to solve
 		{
-			GotoXY((xrefinitial+10),yrefinitial-5);
-			printf("SUBMIT");
+			GotoXY((xrefinitial+16),yrefinitial-5);
 			getch();
 			for(i=0;i<20;i++)
 				Delay();
