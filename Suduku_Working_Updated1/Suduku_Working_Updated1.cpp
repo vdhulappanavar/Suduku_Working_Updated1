@@ -565,12 +565,12 @@ void printgridIndex()
 		printf("%4d",i);
 	}
 
-	/*GotoXY(xreffinal+(GRID_CELL_SIZE_X) , yreffinal);
+	GotoXY(xreffinal+GRID_CELL_SIZE_X , yrefinitial);
 	for(i=0;i<9;i++)
 	{		
 		printf("%d",i);
-		GotoXY((xreffinal-(GRID_CELL_SIZE_X)) , (yrefinitial+((i+1)*GRID_CELL_SIZE_Y)));
-	}*/
+		GotoXY((xreffinal+GRID_CELL_SIZE_X) , (yrefinitial+((i+1)*GRID_CELL_SIZE_Y)));
+	}
 }
 
 void gotoxy(int x, int y)
