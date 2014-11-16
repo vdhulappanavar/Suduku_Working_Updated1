@@ -29,6 +29,7 @@ int backtrack(int oldrow , int oldcol, int *newrow , int *newcol);
 void BacktrackFor1stGird();
 void InitilizeOutputMatrix();
 void FindSolution();
+void printGrid1();
 void printgridIndex();
 void placeNumber(int row , int col);
 int getno(int i,int j);
@@ -38,6 +39,7 @@ int CheckCol(int sno , int row, int col);
 int checkOriginal(int row,int col);
 int CheckBox(int sno , int row, int col);
 void printInputMatrix();
+void printInputMatrix1();
 void printOutputMatrix();
 void BacktrackFor1stGird();
 void GotoXY(int x, int y);
@@ -193,6 +195,9 @@ void print2ndPage()
 
 void printMenu()
 {
+	IndexCount=0;
+	intilize_sudoko();
+	fflush(stdout);
 	int ch,i;
 	char c, k;
 	printf("\n\n\n\n\n\n\n\n\n\n");
@@ -255,28 +260,26 @@ void printMenu()
 			printOptions(2);
 			printInputMatrix();
 			c=getch();
+			GotoXY(xrefinitial , yreffinal+5);
 			if(c!=27 && c!='q' && c!='e')
 			{
 				Intilize1stValue();
 				FindSolution();
 				printOutputMatrix();
+				//printInputMatrix1();
 				k=getch();				
 				if(k=='e')
 				{
 					system("cls");
 					printLastPage();
 				}
-				else
-				{
-					system("cls");
-					printMenu();
-				}
-			}
+			
 			else
 			{				
 				if(c==27 || c==113)
 				{
 					system("cls");
+					intilize_sudoko();
 						printMenu();
 				}
 				
@@ -285,6 +288,7 @@ void printMenu()
 					printLastPage();
 				}
 		}
+			}
 			break;
 		case 51: printLastPage() ;
 			break;
@@ -368,6 +372,8 @@ void placeNumber(int row , int col)
 	value=getno(i,j);
 	if(value!=-1)
 		 OutputMatrix[i][j]=value;
+
+	//this could also be put in place of return -1 in getno()
 	else 
 	{
 		OutputMatrix[i][j] = 0;
@@ -390,12 +396,14 @@ int getno(int i,int j)
 		return OutputMatrix[i][j];
 	}
 
+
 	while(!checkNumber(sno , i , j) && sno <= 9)
 	{
 		sno++;
 	}
 	if(sno==10)
 		return -1;
+	
 	return sno;
 }
 
@@ -466,6 +474,12 @@ int checkOriginal(int row,int col)
 			return true;
 	}
 	return false;
+
+	/*if(InputMatrix[row][col]==0)
+		return true;
+
+	else 
+		return false;*/
 }
 
 int backtrack(int oldrow , int oldcol, int *newrow , int *newcol)
@@ -511,6 +525,25 @@ void printInputMatrix()
 		}
 	}
 }
+
+void printInputMatrix1()
+{
+
+	int x=xrefinitial , y=yreffinal+GRID_CELL_SIZE_Y;
+	int i,j;
+	printGrid1();
+	for(i=0;i<9;i++)
+	{
+		for(j=0;j<9;j++)
+		{
+			if(checkOriginal(i,j))
+			{
+				GotoXY(((j*GRID_CELL_SIZE_X)+xreffinal),((i*GRID_CELL_SIZE_Y)+yreffinal));
+				printf("%d", OutputMatrix[i][j]);
+			}
+		}
+	}
+}
 void printOutputMatrix()
 {
 	int x=xrefinitial , y=yrefinitial;
@@ -528,6 +561,8 @@ void printOutputMatrix()
 				SetConsoleTextAttribute(hConsole, 14);
 				printf("%d", OutputMatrix[i][j]);
 				x=x+GRID_CELL_SIZE_X;
+				//GotoXY(xrefinitial , yreffinal+5);
+				  // printf("%d" , InputMatrix[i][j]);
 			}
 			else
 			{
@@ -540,6 +575,7 @@ void printOutputMatrix()
 		x=xrefinitial;
 	}
 	SetConsoleTextAttribute(hConsole, 7);
+	
 }
 
 void printgridIndex()
@@ -651,6 +687,24 @@ void printGrid()
 	printgridIndex();
 }
 
+void printGrid1()
+{
+	int i,j,x=xrefinitial-2 , y=yreffinal+GRID_CELL_SIZE_Y+5;
+	char ch;
+	for(i=0;i<9;i=i++)
+	{
+		for(j=0;j<9;j++)
+		{
+			printSingleGrid(x,y);
+			x=x+GRID_CELL_SIZE_X;
+		}
+		x=xrefinitial-2;
+		y=y+GRID_CELL_SIZE_Y;
+	}
+	printgridIndex();
+}
+
+
 void printOptions(int o)
 {
 	int i=0;
@@ -685,6 +739,7 @@ void printOptions(int o)
 
 		GotoXY((xrefinitial+10),yrefinitial-5);
 		printf("SUBMIT");
+			
 	}
 
 	if(o==2)
@@ -786,10 +841,13 @@ void ReadAtXY()
 		{
 			val = key - 48;
 			InputMatrix[(ypos/GRID_CELL_SIZE_Y)-7][(xpos/GRID_CELL_SIZE_X)-18]=val;
+			OutputMatrix[(ypos/GRID_CELL_SIZE_Y)-7][(xpos/GRID_CELL_SIZE_X)-18]=val;
 			gridIndex[IndexCount].row=(ypos/GRID_CELL_SIZE_Y)-7;
 			gridIndex[IndexCount].col=(xpos/GRID_CELL_SIZE_X)-18;
 			IndexCount++;
 			printf("%d",val);
+			//GotoXY(xrefinitial+6, yreffinal+4);
+				//printf("%d %d %d %d %d \t %d " , InputMatrix[gridIndex[i].row][gridIndex[i].col] , xpos , ypos,  gridIndex[i].row , gridIndex[i].col , (xpos/GRID_CELL_SIZE_X)-18);
 			moveNext(&xpos , &ypos);
 		}
 
@@ -797,20 +855,21 @@ void ReadAtXY()
 		{
 			GotoXY((xrefinitial+16),yrefinitial-5);
 			getch();
-			for(i=0;i<20;i++)
-				Delay();
 			InitilizeOutputMatrix();
-			if(CheckIfInvalid())
-			{
+			if(!CheckIfInvalid())
+			{ printf("valid");
+			
 				Intilize1stValue();
 				FindSolution();
 				system("cls");
 				printOptions(3);
 				printOutputMatrix();
+				//printInputMatrix1();
 				key1=getch();							
 				if(key1==27 || key1==113)
 				{
 					system("cls");
+					intilize_sudoko();
 					printMenu();
 				}
 				if(key1=='e')
@@ -820,6 +879,8 @@ void ReadAtXY()
 			}
 			else
 			{
+				
+				
 				HANDLE hConsole;
 				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);     
 				GotoXY((xrefinitial+8),yrefinitial-4);
@@ -830,8 +891,11 @@ void ReadAtXY()
 				GotoXY(xrefinitial+8, yreffinal+5);
 				SetConsoleTextAttribute(hConsole, 4);
 				printf ("INVALID SUDOKU\n");
-				getch();
+				//getch();
 			    SetConsoleTextAttribute(hConsole, 7);
+				//GotoXY(xrefinitial+6, yreffinal+3);
+				//printf("%d %d %d" , InputMatrix[gridIndex[i].row][gridIndex[i].col] , gridIndex[i].row , gridIndex[i].col);
+				getch();
 				system("cls");
 				printMenu();
 			}
@@ -840,6 +904,7 @@ void ReadAtXY()
 		if(key==27 || key==113)
 		{
 			system("cls");
+			intilize_sudoko();
 			printMenu();
 		}
 
@@ -853,20 +918,15 @@ void ReadAtXY()
 
 int CheckIfInvalid()
 {
-	int i=0,flag=0;
+	int i=0;
 	for(i=0;i<IndexCount;i++)
 	{
-		if(checkNumber(InputMatrix[gridIndex[IndexCount].row][gridIndex[IndexCount].col] , gridIndex[IndexCount].row , gridIndex[IndexCount].row))
+		if(checkOriginal(gridIndex[i].row , gridIndex[i].col))
+		if(!(checkNumber(InputMatrix[gridIndex[i].row][gridIndex[i].col] , gridIndex[i].row , gridIndex[i].col)))
 		{
-			flag=0;
+			return true;
 		}
-
-		else
-		{
-			return false;
-		}
-
-		return true;
+		return false;
 	}
 }
 void moveNext(int *xpos , int *ypos)
@@ -1062,7 +1122,7 @@ void read_no()
 		gridIndex[gIndex].row = 6;
 		gridIndex[gIndex].col = 6;
 		gIndex++;
-
+		
 
 		InputMatrix[6][7] = 5;
 		gridIndex[gIndex].row = 6;
@@ -1083,7 +1143,7 @@ void read_no()
 
 		InputMatrix[7][3] = 3;
 		gridIndex[gIndex].row = 7;
-		gridIndex[gIndex].col = 2;
+		gridIndex[gIndex].col = 3;
 		gIndex++;
 
 		InputMatrix[7][5] = 7;
